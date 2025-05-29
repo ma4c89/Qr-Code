@@ -1,28 +1,31 @@
-<h2> QR & WhatsApp Generator 📱🔗 </h2>
-  
-<p> Este projeto em Python com interface gráfica (Tkinter) permite:
-✅ Gerar QR Codes a partir de qualquer link (URL)  
-✅ Visualizar o QR Code na tela  
-✅ Compartilhar o link diretamente pelo WhatsApp Web  
+<p align="center">
+  <img src="https://img.icons8.com/fluency/96/qr-code.png" alt="QR Code Icon" />
 </p>
 
-<h2> ✨ Funcionalidades </h2> 
+<h1 align="center">QR & WhatsApp Generator</h1>
 
-<ul>
-  <li>🧾 Geração de QR Code com base em qualquer link válido.</li>
-  <li>🖼️ Visualização instantânea do QR Code na janela do aplicativo.</li>
-  <li>📤 Envio direto de links pelo WhatsApp Web (via navegador).</li>
-  <li>🔎 Validação automática de URLs e números de telefone.</li>
-</ul>
+<p align="center">
+  Geração de QR Codes com compartilhamento via WhatsApp Web.<br>
+  Interface moderna com <strong>Python + CustomTkinter</strong>.
+</p>
 
+---
 
-<h2> 🛠️ Tecnologias utilizadas </h2>
+## 🔧 Funcionalidades
 
-<ul>
-  <li>🐍 Python 3</li>
-  <li>🖼️ Tkinter (interface gráfica)</li>
-  <li>🧩 Pillow (exibição de imagens)</li>
-  <li>🔳 PyQRCode (geração de QR Code)</li>
-  <li>🌐 Webbrowser (abertura do WhatsApp Web)</li>
-  <li>🧪 Regex (validação de links e números)</li>
-</ul>
+- ✅ Geração de QR Code a partir de URLs com `http://` ou `https://`
+- 🖼️ Visualização imediata do QR Code
+- 💾 Salvamento automático da imagem como `QRCode.png`
+- 📲 Compartilhamento via WhatsApp Web com número no formato internacional (`+55...`)
+- 🧹 Botão para limpar todos os campos rapidamente
+
+---
+
+## 🚀 Como Executar
+
+1. **Pré-requisitos**:
+   - Python 3.8 ou superior
+   - Instalar as dependências com:
+
+   ```bash
+   pip install customtkinter pyqrcode pillow

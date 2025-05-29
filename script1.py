@@ -1,99 +1,79 @@
+import customtkinter as ctk
 import pyqrcode
 from PIL import Image, ImageTk
-import tkinter as tk
-from tkinter import messagebox
 import webbrowser
 import re
+import os
+
+def limpar_campos():
+    link_entry.delete(0, "end")
+    numero_entry.delete(0, "end")
+    img_label.configure(image=img_tk_placeholder, text="")
+    status_label.configure(text="", text_color="black")
 
 def gerar_qr():
     link = link_entry.get().strip()
-
     if not link:
-        messagebox.showwarning("Campo vazio", "Por favor, insira uma URL.")
+        status_label.configure(text="⚠️ Por favor, insira uma URL.", text_color="orange")
         return
-
     if not re.match(r'^https?://[^\s]+$', link):
-        messagebox.showerror("URL inválida", "Insira uma URL válida que comece com http:// ou https://")
+        status_label.configure(text="❌ URL inválida. Use http:// ou https://", text_color="red")
         return
-
     try:
         qr = pyqrcode.create(link)
         qr.png("temp_qr.png", scale=10)
-        img = Image.open("temp_qr.png").convert("RGB")
-        img = img.resize((300, 300), Image.Resampling.LANCZOS)
+        img = Image.open("temp_qr.png").convert("RGB").resize((260, 260))
         img.save("QRCode.png")
-
         global img_tk
         img_tk = ImageTk.PhotoImage(img)
-        img_label.config(image=img_tk)
-        status_label.config(text="QR Code gerado com sucesso!", fg="green")
-
+        img_label.configure(image=img_tk, text="")
+        status_label.configure(text="✅ QR Code gerado com sucesso!", text_color="green")
     except Exception as e:
-        messagebox.showerror("Erro", f"Erro ao gerar o QR Code:\n{str(e)}")
+        status_label.configure(text=f"Erro ao gerar: {str(e)}", text_color="red")
 
 def compartilhar():
     numero = numero_entry.get().strip()
     link = link_entry.get().strip()
-
     if not re.match(r'^\+\d{10,15}$', numero):
-        messagebox.showerror("Número inválido", "Insira o número no formato +55XXXXXXXXXXX")
+        status_label.configure(text="❌ Número inválido. Use o formato +55XXXXXXXXXXX", text_color="red")
         return
-
     if not link or not re.match(r'^https?://[^\s]+$', link):
-        messagebox.showwarning("URL inválida", "Gere um QR Code com uma URL válida antes de compartilhar.")
+        status_label.configure(text="⚠️ Gere um QR Code com uma URL válida antes de compartilhar.", text_color="orange")
         return
-
     whatsapp_link = f"https://wa.me/{numero[1:]}?text={link}"
     webbrowser.open(whatsapp_link)
-    status_label.config(text="Abrindo WhatsApp Web...", fg="blue")
-    numero_entry.delete(0, tk.END)
+    status_label.configure(text="📲 Abrindo WhatsApp Web...", text_color="blue")
+    numero_entry.delete(0, "end")
 
-janela = tk.Tk()
-janela.title("QR & WhatsApp Generator")
-janela.configure(bg="#f0f0f0")
-janela.resizable(False, False)
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("green")
 
-tk.Label(janela,
-         text="Insira a URL para gerar QR Code:",
-         bg="#f0f0f0",
-         font=("Arial", 10),
-         justify="center").pack(padx=10, pady=(10, 0), anchor="center")
-link_entry = tk.Entry(janela, width=50)
-link_entry.insert(0, "https://")
-link_entry.pack(padx=10, pady=(0,10))
+app = ctk.CTk()
+app.title("QR & WhatsApp Generator")
+app.geometry("420x640")
+app.resizable(False, False)
 
-tk.Button(janela,
-          text="Gerar QR Code",
-          fg="white",
-          bg="#00796B",
-          font=("Arial", 10, "bold"),
-          relief="ridge",
-          bd=3,
-          command=gerar_qr).pack(pady=(0,10))
+ctk.CTkLabel(app, text="🔧 Gerador de QR Code & WhatsApp", font=ctk.CTkFont(size=18, weight="bold")).pack(pady=(20, 10))
 
-img_placeholder = Image.new("RGB", (300,300), "#ffffff")
-img_tk = ImageTk.PhotoImage(img_placeholder)
-img_label = tk.Label(janela, image=img_tk, bg="#f0f0f0")
-img_label.pack(padx=10, pady=10)
+ctk.CTkLabel(app, text="Insira a URL:", anchor="w").pack(pady=(5, 0), padx=20, fill="x")
+link_entry = ctk.CTkEntry(app, width=360, placeholder_text="https://exemplo.com")
+link_entry.pack(pady=5)
 
-tk.Label(janela,
-         text="Número do WhatsApp (ex: +5599999999999):",
-         bg="#f0f0f0",
-         font=("Arial", 10),
-         justify="center").pack(padx=10, pady=(10, 0), anchor="center")
-numero_entry = tk.Entry(janela, width=30)
-numero_entry.pack(padx=10, pady=(0,10))
+ctk.CTkButton(app, text="🧾 Gerar QR Code", command=gerar_qr).pack(pady=(5, 15))
 
-tk.Button(janela,
-          text="Compartilhar Link no WhatsApp",
-          fg="white",
-          bg="#128c7e",
-          font=("Arial", 10, "bold"),
-          relief="groove",
-          bd=3,
-          command=compartilhar).pack(pady=(0,10))
+img_placeholder = Image.new("RGB", (260, 260), "#d9d9d9")
+img_tk_placeholder = ImageTk.PhotoImage(img_placeholder)
+img_label = ctk.CTkLabel(app, image=img_tk_placeholder, text="")
+img_label.pack(pady=10)
 
-status_label = tk.Label(janela, text="", bg="#f0f0f0")
-status_label.pack(pady=(0,10))
+ctk.CTkLabel(app, text="Número WhatsApp (ex: +5599999999999):", anchor="w").pack(pady=(5, 0), padx=20, fill="x")
+numero_entry = ctk.CTkEntry(app, width=240, placeholder_text="+55...")
+numero_entry.pack(pady=5)
 
-janela.mainloop()
+ctk.CTkButton(app, text="📤 Compartilhar no WhatsApp", command=compartilhar, fg_color="#128c7e", hover_color="#0e6e5f").pack(pady=(10, 5))
+ctk.CTkButton(app, text="🧹 Limpar Tudo", command=limpar_campos, fg_color="#999").pack(pady=5)
+
+status_label = ctk.CTkLabel(app, text="", font=ctk.CTkFont(size=12))
+status_label.pack(pady=(10, 10))
+
+app.mainloop()
